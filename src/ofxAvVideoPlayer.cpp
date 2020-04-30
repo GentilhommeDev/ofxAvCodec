@@ -158,7 +158,7 @@ bool ofxAvVideoPlayer::load(string fileName, bool stream){
 		width = video_context->width;
 		height = video_context->height;
 		pix_fmt = AV_PIX_FMT_RGB24;
-
+		//pix_fmt = AV_PIX_FMT_YUV420P;
 		// allow skip frames only for prores, which seems to decode particularly slow
 		allowSkipFrames = video_context->codec_id == AV_CODEC_ID_PRORES;
 
@@ -166,7 +166,7 @@ bool ofxAvVideoPlayer::load(string fileName, bool stream){
 		// we take 1.2 times frame rate (e.g. 36 frames for a 30fps video),
 		// and at least 30 frames to avoid big issues just in case r_frame_rate is a bit off.
 		int numBufferedFrames = (int)ofClamp(av_q2d(video_stream->r_frame_rate)*1.4, 30.0, 70.0);
-		ofLogError() << "[ofxAvVideoPlayer] Buffering " << numBufferedFrames << endl;
+		ofLogNotice() << "[ofxAvVideoPlayer] Buffering " << numBufferedFrames << endl;
 		for( int i = 0; i < numBufferedFrames; i++ ){
 			ofxAvVideoData * data = new ofxAvVideoData();
 			int ret = av_image_alloc(data->video_dst_data, data->video_dst_linesize,
@@ -177,6 +177,8 @@ bool ofxAvVideoPlayer::load(string fileName, bool stream){
 			data->video_dst_bufsize = ret;
 			video_buffers.push_back(data);
 		}
+		ofLogNotice() << "done";
+
 	}
 	
 	if( video_stream_idx == -1 ){
@@ -1150,7 +1152,6 @@ void ofxAvVideoPlayer::run_decoder(){
 					isPlaying = false;
 					continue;
 				}
-				
 				av_seek_frame(fmt_ctx, -1, seek_target, AVSEEK_FLAG_BACKWARD|AVSEEK_FLAG_ANY);
 				//avformat_seek_file(fmt_ctx, video_stream_idx, 0, 0, 0, AVSEEK_FLAG_BYTE|AVSEEK_FLAG_BACKWARD);
 				if( video_stream_idx >= 0 ){
