@@ -1252,8 +1252,8 @@ int ofxAvVideoPlayer::getCurrentFrame() {
 }
 
 int ofxAvVideoPlayer::getTotalNumFrames() {
-    if( !isLoaded() ) return 0;
-    return (int)(duration * 1000 * getFps());
+	if (!isLoaded()) return 0;
+	return (int)(duration * getFps()*0.001);
 }
 
 void ofxAvVideoPlayer::firstFrame(){
